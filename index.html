@@ -45,54 +45,450 @@ p{line-height:1.9;color:#d9edf2}
 
   <div id="msg">آفرین ساحل! 👏</div>
   <div id="player">🏃</div>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ساحل | BAGHLANHERO</title>
+<style>
+*{box-sizing:border-box}
+html,body{
+ margin:0;width:100%;height:100%;overflow:hidden;
+ font-family:Tahoma,Arial,sans-serif;background:#101820;color:#fff
+}
+body{display:flex;justify-content:center;align-items:center}
+#game{
+ position:relative;width:100%;height:100%;max-width:1000px;
+ overflow:hidden;background:#79c8ec
+}
+.sky{
+ position:absolute;inset:0;
+ background:linear-gradient(#55b9e8 0%,#c9efff 48%,#86b95e 49%,#3e7135 100%)
+}
+.sun{
+ position:absolute;width:80px;height:80px;border-radius:50%;
+ background:#fff3a8;top:10%;left:12%;
+ box-shadow:0 0 40px #fff
+}
+.mountain{
+ position:absolute;bottom:32%;width:0;height:0;
+ border-left:190px solid transparent;
+ border-right:190px solid transparent;
+ border-bottom:260px solid #476957
+}
+.m1{left:-120px}
+.m2{left:25%;border-left-width:230px;border-right-width:230px;border-bottom-color:#557960}
+.m3{right:-130px;border-left-width:220px;border-right-width:220px;border-bottom-color:#3d604d}
 
-  <div class="controls">
-    <button id="right">➡️</button>
-    <button id="jump">⬆️</button>
-    <button id="left">⬅️</button>
-  </div>
+.village{
+ position:absolute;bottom:30%;left:5%;font-size:48px;
+ letter-spacing:12px;filter:drop-shadow(0 5px 3px #333)
+}
+.road{
+ position:absolute;bottom:-5%;left:15%;width:70%;height:65%;
+ background:#6e6759;
+ clip-path:polygon(40% 0,60% 0,100% 100%,0 100%)
+}
+.road:after{
+ content:"";position:absolute;top:0;bottom:0;left:48%;width:4%;
+ background:repeating-linear-gradient(to bottom,#e9d88b 0 35px,transparent 35px 70px)
+}
 
-  <div id="start">
-    <div class="panel">
-      <h1>ساحل</h1>
-      <p>به <b>BAGHLANHERO</b> خوش آمدی!<br>در مسیرهای زیبای بغلان حرکت کن و امتیاز جمع کن.</p>
-      <button class="startbtn" id="play">شروع بازی 🎮</button>
-    </div>
-  </div>
+.hud{
+ position:absolute;top:10px;left:10px;right:10px;
+ display:flex;justify-content:space-between;gap:7px;z-index:20
+}
+.badge{
+ background:rgba(0,0,0,.55);padding:8px 11px;
+ border-radius:13px;border:1px solid #ffffff33;
+ font-size:13px
+}
+
+#player,#player2{
+ position:absolute;bottom:18%;font-size:54px;z-index:8;
+ filter:drop-shadow(0 6px 4px #0008)
+}
+#player{left:45%}
+#player2{left:55%;display:none}
+
+.enemy{
+ position:absolute;font-size:48px;z-index:7;
+ filter:drop-shadow(0 5px 4px #0009)
+}
+.bullet{
+ position:absolute;width:12px;height:12px;border-radius:50%;
+ background:#ffe66b;z-index:10;box-shadow:0 0 12px #fff
+}
+.coin{
+ position:absolute;font-size:28px;z-index:6;
+ animation:coin 1s infinite alternate
+}
+@keyframes coin{to{transform:translateY(-8px)}}
+
+.controls{
+ position:absolute;bottom:12px;left:0;right:0;
+ display:flex;justify-content:space-between;
+ padding:0 12px;z-index:30
+}
+.pad{display:flex;gap:8px}
+button{
+ border:0;border-radius:16px;background:#0009;color:#fff;
+ width:60px;height:54px;font-size:23px;
+ box-shadow:0 4px 12px #0007
+}
+button:active{transform:scale(.92)}
+.fire{background:#a52323;width:70px}
+
+#menu,#tutorial,#gameover{
+ position:absolute;inset:0;z-index:100;
+ display:flex;align-items:center;justify-content:center;
+ background:#07151dcc;backdrop-filter:blur(5px)
+}
+.panel{
+ width:min(92%,430px);padding:25px;border-radius:24px;
+ background:#0c2029f2;text-align:center;
+ border:1px solid #ffffff30
+}
+h1{margin:0 0 5px;font-size:35px}
+h2{margin:5px 0 15px}
+p{line-height:1.9;color:#d7e9ed}
+.menuBtn{
+ width:100%;height:54px;margin:6px 0;
+ background:#1d8f59;font-size:18px
+}
+.two{background:#2773ad}
+.help{background:#6650a8}
+.hidden{display:none!important}
+
+#message{
+ position:absolute;top:75px;left:50%;
+ transform:translateX(-50%);z-index:50;
+ background:#000b;padding:8px 14px;border-radius:12px;
+ display:none
+}
+</style>
+</head>
+
+<body>
+<div id="game">
+
+<div class="sky"></div>
+<div class="sun"></div>
+<div class="mountain m1"></div>
+<div class="mountain m2"></div>
+<div class="mountain m3"></div>
+<div class="village">🏠 🏠 🌳 🏠</div>
+<div class="road"></div>
+
+<div class="hud">
+ <div class="badge">🏔️ BAGHLANHERO</div>
+ <div class="badge">❤️ <span id="hp">100</span></div>
+ <div class="badge">🪙 <span id="coins">0</span></div>
+ <div class="badge">🏆 <span id="score">0</span></div>
+</div>
+
+<div id="message">آفرین ساحل! 🔥</div>
+
+<div id="player">🪖</div>
+<div id="player2">🧑‍🚀</div>
+
+<div class="controls">
+ <div class="pad">
+  <button id="left">⬅️</button>
+  <button id="right">➡️</button>
+  <button id="jump">⬆️</button>
+ </div>
+ <button class="fire" id="fire">🔫</button>
+</div>
+
+<div id="menu">
+ <div class="panel">
+  <h1>ساحل</h1>
+  <h2>BAGHLANHERO</h2>
+  <p>🎮 بازی جنگی فانتزی در مناظر زیبای بغلان</p>
+
+  <button class="menuBtn" id="solo">👤 بازی تک‌نفره</button>
+  <button class="menuBtn two" id="duo">👥 بازی دونفره</button>
+  <button class="menuBtn help" id="tutorialBtn">🎯 آموزش بازی</button>
+ </div>
+</div>
+
+<div id="tutorial" class="hidden">
+ <div class="panel">
+  <h2>🎯 آموزش بازی</h2>
+  <p>
+   ⬅️➡️ برای حرکت<br>
+   ⬆️ برای پرش<br>
+   🔫 برای شلیک فانتزی<br>
+   🪙 سکه‌ها را جمع کن<br>
+   ❤️ مراقب جانت باش
+  </p>
+  <button class="menuBtn" id="back">بازگشت</button>
+ </div>
+</div>
+
+<div id="gameover" class="hidden">
+ <div class="panel">
+  <h1>💥 بازی تمام شد</h1>
+  <p>امتیاز شما: <b id="finalScore">0</b></p>
+  <p>سکه‌ها: 🪙 <b id="finalCoins">0</b></p>
+  <button class="menuBtn" id="restart">🔄 دوباره بازی</button>
+ </div>
 </div>
 
 <script>
-const player=document.getElementById('player');
-const scoreEl=document.getElementById('score');
-const start=document.getElementById('start');
-const msg=document.getElementById('msg');
-let x=50, score=0, running=false, jumpTimer;
+const player=document.getElementById("player");
+const player2=document.getElementById("player2");
+const hpEl=document.getElementById("hp");
+const coinsEl=document.getElementById("coins");
+const scoreEl=document.getElementById("score");
+const menu=document.getElementById("menu");
+const tutorial=document.getElementById("tutorial");
+const gameover=document.getElementById("gameover");
+const game=document.getElementById("game");
 
-function move(dx){
-  if(!running)return;
-  x=Math.max(20,Math.min(80,x+dx));
-  player.style.left=x+'%';
-  score++;
-  scoreEl.textContent=score;
-  if(score%10===0){msg.style.display='block';setTimeout(()=>msg.style.display='none',900)}
+let running=false;
+let mode="solo";
+let x=45;
+let x2=55;
+let hp=100;
+let coins=0;
+let score=0;
+let enemies=[];
+let bullets=[];
+let coinObjects=[];
+let enemyTimer;
+let coinTimer;
+let enemyFireTimer;
+
+function update(){
+ player.style.left=x+"%";
+ if(mode==="duo") player2.style.left=x2+"%";
+
+ hpEl.textContent=hp;
+ coinsEl.textContent=coins;
+ scoreEl.textContent=score;
 }
+
+function move(dir){
+ if(!running)return;
+ x=Math.max(15,Math.min(85,x+dir));
+ score++;
+ update();
+}
+
 function jump(){
-  if(!running)return;
-  player.style.transition='bottom .22s ease';
-  player.style.bottom='32%';
-  clearTimeout(jumpTimer);
-  jumpTimer=setTimeout(()=>player.style.bottom='16%',260);
-  score+=2; scoreEl.textContent=score;
+ if(!running)return;
+
+ player.style.transition="bottom .2s";
+ player.style.bottom="34%";
+
+ setTimeout(()=>{
+  player.style.bottom="18%";
+ },300);
 }
-document.getElementById('left').onclick=()=>move(-5);
-document.getElementById('right').onclick=()=>move(5);
-document.getElementById('jump').onclick=jump;
-document.getElementById('play').onclick=()=>{running=true;start.style.display='none'};
-document.addEventListener('keydown',e=>{
- if(e.key==='ArrowLeft')move(-5);
- if(e.key==='ArrowRight')move(5);
- if(e.key==='ArrowUp'||e.key===' ')jump();
+
+function fire(){
+ if(!running)return;
+
+ const b=document.createElement("div");
+ b.className="bullet";
+ b.textContent="";
+ b.style.left=(x+3)+"%";
+ b.style.bottom="25%";
+ game.appendChild(b);
+ bullets.push({el:b,x:x,y:25});
+
+ score+=2;
+ update();
+}
+
+function createEnemy(){
+ if(!running)return;
+
+ const e=document.createElement("div");
+ e.className="enemy";
+ e.textContent="👾";
+
+ const ex=15+Math.random()*70;
+ e.style.left=ex+"%";
+ e.style.bottom=(18+Math.random()*20)+"%";
+ game.appendChild(e);
+
+ enemies.push({el:e,x:ex});
+}
+
+function createCoin(){
+ if(!running)return;
+
+ const c=document.createElement("div");
+ c.className="coin";
+ c.textContent="🪙";
+
+ const cx=18+Math.random()*64;
+ c.style.left=cx+"%";
+ c.style.bottom=(22+Math.random()*28)+"%";
+
+ game.appendChild(c);
+ coinObjects.push({el:c,x:cx});
+}
+
+function showMessage(text){
+ const m=document.getElementById("message");
+ m.textContent=text;
+ m.style.display="block";
+ setTimeout(()=>m.style.display="none",900);
+}
+
+function startGame(selectedMode){
+ mode=selectedMode;
+ running=true;
+
+ menu.classList.add("hidden");
+ tutorial.classList.add("hidden");
+ gameover.classList.add("hidden");
+
+ x=45;
+ hp=100;
+ coins=0;
+ score=0;
+
+ player.style.display="block";
+ player2.style.display=mode==="duo"?"block":"none";
+
+ enemies.forEach(a=>a.el.remove());
+ coinObjects.forEach(a=>a.el.remove());
+ bullets.forEach(a=>a.el.remove());
+
+ enemies=[];
+coinObjects=[];
+bullets=[];
+
+ clearInterval(enemyTimer);
+ clearInterval(coinTimer);
+ clearInterval(enemyFireTimer);
+
+ enemyTimer=setInterval(createEnemy,1800);
+ coinTimer=setInterval(createCoin,1300);
+ enemyFireTimer=setInterval(enemyAttack,2500);
+
+ update();
+ showMessage(
+  mode==="duo" ? "👥 حالت دونفره شروع شد!" :
+  "👤 مأموریت شروع شد!"
+ );
+}
+
+function enemyAttack(){
+ if(!running || enemies.length===0)return;
+
+ hp-=5;
+
+ if(hp<=0){
+  hp=0;
+  endGame();
+ }else{
+  showMessage("⚠️ آسیب دیدی!");
+ }
+
+ update();
+}
+
+function endGame(){
+ running=false;
+
+ clearInterval(enemyTimer);
+ clearInterval(coinTimer);
+ clearInterval(enemyFireTimer);
+
+ document.getElementById("finalScore").textContent=score;
+ document.getElementById("finalCoins").textContent=coins;
+
+ gameover.classList.remove("hidden");
+}
+
+function collectCoins(){
+ coinObjects.forEach((c,i)=>{
+  if(Math.abs(c.x-x)<5){
+   c.el.remove();
+   coinObjects.splice(i,1);
+
+   coins++;
+   score+=5;
+
+   update();
+   showMessage("🪙 سکه جمع شد!");
+  }
+ });
+}
+
+function moveBullets(){
+ bullets.forEach((b,i)=>{
+  b.y+=4;
+  b.el.style.bottom=b.y+"%";
+
+  if(b.y>100){
+   b.el.remove();
+   bullets.splice(i,1);
+  }
+ });
+}
+
+setInterval(()=>{
+ if(!running)return;
+
+ moveBullets();
+ collectCoins();
+
+ enemies.forEach((e,i)=>{
+  e.x += (x-e.x)*0.006;
+  e.el.style.left=e.x+"%";
+
+  if(Math.abs(e.x-x)<3){
+   hp-=10;
+   e.el.remove();
+   enemies.splice(i,1);
+   update();
+  }
+ });
+
+ if(hp<=0)endGame();
+
+},100);
+
+document.getElementById("left").onclick=()=>move(-4);
+document.getElementById("right").onclick=()=>move(4);
+document.getElementById("jump").onclick=jump;
+document.getElementById("fire").onclick=fire;
+
+document.getElementById("solo").onclick=()=>startGame("solo");
+document.getElementById("duo").onclick=()=>startGame("duo");
+
+document.getElementById("tutorialBtn").onclick=()=>{
+ menu.classList.add("hidden");
+ tutorial.classList.remove("hidden");
+};
+
+document.getElementById("back").onclick=()=>{
+ tutorial.classList.add("hidden");
+ menu.classList.remove("hidden");
+};
+
+document.getElementById("restart").onclick=()=>{
+ startGame(mode);
+};
+
+document.addEventListener("keydown",e=>{
+ if(e.key==="ArrowLeft")move(-4);
+ if(e.key==="ArrowRight")move(4);
+ if(e.key==="ArrowUp"||e.key===" ")jump();
+ if(e.key==="Enter")fire();
 });
+
+update();
 </script>
+
+</div>
 </body>
 </html>
